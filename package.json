@@ -1,0 +1,17 @@
+{
+  "name": "ipi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IPI - Internal recruitment platform (developers, calendar, interview processes, analytics)",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n server,client -c blue,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev:clean": "powershell -ExecutionPolicy Bypass -File scripts/kill-dev-ports.ps1",
+    "predev": "npm run dev:clean",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

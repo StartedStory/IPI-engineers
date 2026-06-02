@@ -1,0 +1,157 @@
+{
+  "users": [
+    {
+      "id": "kRhkl6pb3htGd0BiXEFHT",
+      "name": "Alice Manager",
+      "email": "manager@ipi.local",
+      "passwordHash": "$2a$10$27zdjKf0GiKjAj./3k7xPuXjd8cSYqn42EB6fSeFGCXLcZGgdK/xG",
+      "role": "manager"
+    },
+    {
+      "id": "yNFWZrMi3IhWTKTmQaD4u",
+      "name": "Ben Bidder",
+      "email": "bidder@ipi.local",
+      "passwordHash": "$2a$10$1eQS5l0ZHkSkkqr7NoVoVerzzdc80wdrsLKC7fTEuS9Dc8iFZ1eam",
+      "role": "bidder"
+    },
+    {
+      "id": "P3MSJgGD_XYcd1XyF8FUM",
+      "name": "Ivy Interviewer",
+      "email": "interviewer@ipi.local",
+      "passwordHash": "$2a$10$uggcvDdxhq8IeU03LrpoLunHJDMz.ISM16V973SSolo9laO06vYcO",
+      "role": "interviewer"
+    },
+    {
+      "id": "jSkqh9-_fLgmBV1H9CZFU",
+      "name": "Bob Broker",
+      "email": "broker@ipi.local",
+      "passwordHash": "$2a$10$xYGgzGZeHZCB//8Ni4jpceBOegp1VAgAlx4EzFm.eOkCMnEv9BPRG",
+      "role": "broker"
+    }
+  ],
+  "developers": [
+    {
+      "id": "yET4XlKhRSJYql1AT9UCL",
+      "name": "John Doe",
+      "location": "Berlin, Germany",
+      "email": "john.doe@example.com",
+      "password": "TempPass#1",
+      "linkedin": "https://www.linkedin.com/in/johndoe",
+      "cvFile": {
+        "filename": "H29gJDsRrqol5iyt4rRuz.pdf",
+        "originalName": "Abdul Rehman  cv.pdf"
+      },
+      "createdAt": "2026-06-02T18:54:24.467Z"
+    },
+    {
+      "id": "KgXJnyr_2aii_G_5bik0m",
+      "name": "Jane Smith",
+      "location": "Lisbon, Portugal",
+      "email": "jane.smith@example.com",
+      "password": "TempPass#2",
+      "linkedin": "https://www.linkedin.com/in/janesmith",
+      "cvFile": null,
+      "createdAt": "2026-06-02T18:54:24.480Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "DaIWo46ivx2jufiBRyv9v",
+      "developerId": "yET4XlKhRSJYql1AT9UCL",
+      "developerName": "John Doe",
+      "interviewerName": "Omid",
+      "recruiterName": "Ben Bidder",
+      "start": "2026-06-03T18:54:24.480Z",
+      "end": "2026-06-03T19:54:24.480Z",
+      "meetingLink": "https://meet.example.com/abc",
+      "jdLink": "https://jobs.example.com/123",
+      "roleTitle": "Senior Backend Engineer",
+      "companyName": "Acme Corp",
+      "color": "#3b82f6",
+      "status": "scheduled",
+      "processStage": "tech",
+      "createdBy": "yNFWZrMi3IhWTKTmQaD4u"
+    },
+    {
+      "id": "DeoKpdPJDYGpt7K9QaMiS",
+      "developerId": "KgXJnyr_2aii_G_5bik0m",
+      "developerName": "Jane Smith",
+      "interviewerName": "",
+      "recruiterName": "Ben Bidder",
+      "start": "2026-06-01T02:00:00.000Z",
+      "end": "2026-06-02T03:00:00.000Z",
+      "meetingLink": "",
+      "jdLink": "",
+      "roleTitle": "",
+      "companyName": "",
+      "color": "#3b82f6",
+      "status": "scheduled",
+      "processStage": "intro",
+      "createdBy": "yNFWZrMi3IhWTKTmQaD4u"
+    }
+  ],
+  "processes": [
+    {
+      "id": "AOV-TptmhnlXVceNc8g6q",
+      "companyName": "Acme Corp",
+      "roleTitle": "Senior Backend Engineer",
+      "developerId": "yET4XlKhRSJYql1AT9UCL",
+      "developerName": "John Doe",
+      "stage": "tech",
+      "interviewerName": "Ivy Interviewer",
+      "brokerName": "Bob Broker",
+      "jdLink": "https://jobs.example.com/123",
+      "notes": "Strong fundamentals",
+      "updatedAt": "2026-06-02T20:07:30.014Z"
+    },
+    {
+      "id": "vlnszqO9uIBdPZA15sm-y",
+      "companyName": "Globex",
+      "roleTitle": "Full-Stack Engineer",
+      "developerId": "KgXJnyr_2aii_G_5bik0m",
+      "developerName": "Jane Smith",
+      "stage": "onboard",
+      "interviewerName": "Ivy Interviewer",
+      "brokerName": "Bob Broker",
+      "jdLink": "https://jobs.example.com/456",
+      "notes": "Awaiting screening call",
+      "updatedAt": "2026-06-02T19:17:46.194Z"
+    }
+  ],
+  "teammates": [
+    {
+      "id": "0C1x1uaYydkfNb_beP8be",
+      "role": "bidder",
+      "name": "Ben Bidder",
+      "email": "bidder@ipi.local",
+      "telegram": "@benb"
+    },
+    {
+      "id": "gjUcMvUVGSma8TOndUvb7",
+      "role": "interviewer",
+      "name": "Ivy Interviewer",
+      "email": "interviewer@ipi.local",
+      "telegram": "@ivyi",
+      "discord": "ivy#1234",
+      "whatsapp": "+1-555-0100"
+    },
+    {
+      "id": "1S24AClk5j21dY3cNoRt2",
+      "role": "broker",
+      "name": "Bob Broker",
+      "email": "broker@ipi.local",
+      "telegram": "@bobb",
+      "discord": "bob#5678",
+      "whatsapp": "+1-555-0101"
+    },
+    {
+      "id": "V3IV68cvbXzeiFKiuVP9I",
+      "role": "interviewer",
+      "name": "Omid",
+      "email": "Omid123@gmail.com",
+      "telegram": "@omid",
+      "discord": "",
+      "whatsapp": ""
+    }
+  ]
+}
