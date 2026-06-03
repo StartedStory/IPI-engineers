@@ -139,7 +139,7 @@ export default function UsersPage() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
+            <thead className="bg-slate-200 text-slate-600 text-xs uppercase tracking-wider">
               <tr>
                 <th className="text-left px-4 py-2.5">Name</th>
                 <th className="text-left px-4 py-2.5">Email</th>
@@ -148,11 +148,11 @@ export default function UsersPage() {
                 <th className="px-4 py-2.5" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {filtered.map((u) => {
                 const isSelf = u.id === me?.id;
                 return (
-                  <tr key={u.id} className="hover:bg-slate-50/50">
+                  <tr key={u.id} className="hover:bg-slate-200/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Avatar name={u.name} src={u.avatarUrl} size={28} />

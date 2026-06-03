@@ -36,16 +36,16 @@ export function Layout() {
   const [profileOpen, setProfileOpen] = useState(false);
   if (!user) return null;
   return (
-    <div className="min-h-screen flex">
-      <aside className="w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col">
-        <div className="px-5 py-5 border-b border-slate-200">
+    <div className="min-h-screen flex bg-slate-200">
+      <aside className="w-64 shrink-0 bg-slate-800 border-r border-slate-700 flex flex-col">
+        <div className="px-5 py-5 border-b border-slate-700">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-md bg-brand-500 grid place-items-center text-white font-bold">
               IPI
             </div>
             <div>
-              <div className="text-sm font-bold text-slate-900">Interview Proxy Iran</div>
-              <div className="text-[11px] text-slate-500">Interview · Process · Insights</div>
+              <div className="text-sm font-bold text-white">Interview Proxy Iran</div>
+              <div className="text-[11px] text-slate-400">Interview · Process · Insights</div>
             </div>
           </div>
         </div>
@@ -63,8 +63,8 @@ export function Layout() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive || active
-                        ? 'bg-brand-50 text-brand-700'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-brand-500 text-white shadow-sm'
+                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                     }`
                   }
                 >
@@ -74,7 +74,7 @@ export function Layout() {
               );
             })}
         </nav>
-        <div className="border-t border-slate-200 p-4">
+        <div className="border-t border-slate-700 p-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setProfileOpen(true)}
@@ -87,13 +87,13 @@ export function Layout() {
               </span>
             </button>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-slate-900 truncate">{user.name}</div>
+              <div className="text-sm font-semibold text-white truncate">{user.name}</div>
               <span className={`badge border ${roleColor[user.role]}`}>{user.role}</span>
             </div>
             <button
               onClick={logout}
               title="Log out"
-              className="p-2 rounded-md hover:bg-slate-100 text-slate-500"
+              className="p-2 rounded-md hover:bg-slate-700 text-slate-400 hover:text-white"
             >
               <LogOut className="h-4 w-4" />
             </button>

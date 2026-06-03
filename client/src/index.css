@@ -36,7 +36,7 @@ body {
     @apply block text-xs font-medium text-slate-600 mb-1;
   }
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-slate-200;
+    @apply bg-slate-100 rounded-xl shadow-sm border border-slate-300;
   }
   .badge {
     @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;

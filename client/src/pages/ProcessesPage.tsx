@@ -138,7 +138,7 @@ export default function ProcessesPage() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
+            <thead className="bg-slate-200 text-slate-600 text-xs uppercase tracking-wider">
               <tr>
                 <th className="text-left px-4 py-2.5">Company / Role</th>
                 <th className="text-left px-4 py-2.5">Developer</th>
@@ -149,9 +149,9 @@ export default function ProcessesPage() {
                 <th className="px-4 py-2.5" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {filtered.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/50">
+                <tr key={p.id} className="hover:bg-slate-200/50">
                   <td className="px-4 py-3">
                     <div className="font-semibold text-slate-900">{p.companyName}</div>
                     <div className="text-xs text-slate-500">{p.roleTitle}</div>

@@ -118,7 +118,7 @@ export default function DevelopersPage() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
+            <thead className="bg-slate-200 text-slate-600 text-xs uppercase tracking-wider">
               <tr>
                 <th className="text-left px-4 py-2.5">Name</th>
                 <th className="text-left px-4 py-2.5">Location</th>
@@ -128,9 +128,9 @@ export default function DevelopersPage() {
                 <th className="px-4 py-2.5" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {filtered.map((d) => (
-                <tr key={d.id} className="hover:bg-slate-50/50">
+                <tr key={d.id} className="hover:bg-slate-200/50">
                   <td className="px-4 py-3">
                     <div className="font-semibold text-slate-900">{d.name}</div>
                   </td>

@@ -92,7 +92,7 @@ export default function TeammatesPage() {
               </div>
               <span className={`badge border ${roleColor[role as Role]}`}>{role}</span>
             </div>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-200">
               {grouped[role].map((t) => (
                 <li key={t.id} className="p-4 flex items-start gap-3">
                   <div className="h-9 w-9 rounded-full bg-slate-100 grid place-items-center text-slate-600 font-semibold">

@@ -114,7 +114,7 @@ export default function DashboardPage() {
               {upcoming.map((e) => (
                 <li
                   key={e.id}
-                  className="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50"
+                  className="flex items-center gap-3 p-2 rounded-md hover:bg-slate-200/60"
                 >
                   <span
                     className="h-9 w-1.5 rounded"
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           {processes.length === 0 ? (
             <div className="text-sm text-slate-500 py-8 text-center">No processes yet.</div>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-200">
               {processes.slice(0, 6).map((p) => (
                 <li key={p.id} className="py-3 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
@@ -187,7 +187,7 @@ export default function DashboardPage() {
               No interviewer availability set for today or tomorrow.
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-200">
               {availableInterviewers.map((iv) => (
                 <li key={iv.name} className="py-3 flex items-start gap-3">
                   <Avatar name={iv.name} size={32} />
