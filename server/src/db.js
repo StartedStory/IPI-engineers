@@ -330,7 +330,74 @@ export const events = {
 };
 
 // ─── processes ──────────────────────────────────────────────────────────────
+async function findProcessForEvent(ev) {
+  if (!ev.companyName && !ev.roleTitle) return null;
+  let q = supabase.from('processes').select('*');
+  if (ev.developerId) q = q.eq('developer_id', ev.developerId);
+  else if (ev.developerName) q = q.ilike('developer_name', ev.developerName);
+  if (ev.companyName) q = q.ilike('company_name', ev.companyName);
+  if (ev.roleTitle) q = q.ilike('role_title', ev.roleTitle);
+  const { data, error } = await q.limit(1);
+  if (error) throw error;
+  return data?.[0] ?? null;
+}
+
+function processFieldsFromEvent(ev) {
+  return {
+    company_name: ev.companyName || '',
+    role_title: ev.roleTitle || '',
+    developer_id: ev.developerId || null,
+    developer_name: ev.developerName || '',
+    stage: ev.processStage || 'intro',
+    interviewer_name: ev.interviewerName || '',
+    jd_link: ev.jdLink || '',
+    updated_at: new Date().toISOString(),
+  };
+}
+
+/** Create or update a process row from a calendar event (same company + role + developer). */
+async function syncProcessFromEvent(ev) {
+  if (!ev.companyName && !ev.roleTitle) return null;
+  const existing = await findProcessForEvent(ev);
+  const fromEvent = processFieldsFromEvent(ev);
+  if (existing) {
+    const upd = { ...fromEvent };
+    // Keep broker/notes if already set on the process (calendar has no broker field).
+    if (existing.broker_name) upd.broker_name = existing.broker_name;
+    if (existing.notes) upd.notes = existing.notes;
+    const data = unwrap(
+      await supabase.from('processes').update(upd).eq('id', existing.id).select('*').single()
+    );
+    return processRow(data);
+  }
+  const data = unwrap(
+    await supabase
+      .from('processes')
+      .insert({ ...fromEvent, broker_name: '', notes: '' })
+      .select('*')
+      .single()
+  );
+  return processRow(data);
+}
+
 export const processes = {
+  syncFromEvent: syncProcessFromEvent,
+
+  /** Backfill processes from all calendar events (for data created before sync existed). */
+  async syncAllFromEvents() {
+    const allEvents = unwrap(await supabase.from('events').select('*'));
+    let created = 0;
+    let updated = 0;
+    for (const row of allEvents) {
+      const ev = eventRow(row);
+      const before = await findProcessForEvent(ev);
+      await syncProcessFromEvent(ev);
+      if (before) updated++;
+      else created++;
+    }
+    return { created, updated, total: allEvents.length };
+  },
+
   async listVisibleTo(user) {
     let q = supabase.from('processes').select('*').order('updated_at', { ascending: false });
     if (user.role === 'broker') {

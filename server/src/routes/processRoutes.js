@@ -14,6 +14,16 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+/** Backfill processes from existing calendar events (manager/bidder). */
+router.post('/sync-from-events', requireRole('manager', 'bidder'), async (_req, res, next) => {
+  try {
+    const result = await processes.syncAllFromEvents();
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.post('/', requireRole('manager', 'bidder'), async (req, res, next) => {
   try {
     const p = req.body || {};

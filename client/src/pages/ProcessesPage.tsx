@@ -28,8 +28,20 @@ export default function ProcessesPage() {
     const r = await api.get<ProcessItem[]>('/processes');
     setItems(r.data);
   }
+
+  async function loadWithSync() {
+    if (user && Permissions.processes.edit(user.role)) {
+      try {
+        await api.post('/processes/sync-from-events');
+      } catch {
+        /* still load processes if sync fails */
+      }
+    }
+    await load();
+  }
+
   useEffect(() => {
-    load();
+    loadWithSync();
     if (user && Permissions.developers.view(user.role)) {
       api.get<Developer[]>('/developers').then((r) => setDevs(r.data)).catch(() => {});
     }
@@ -53,7 +65,7 @@ export default function ProcessesPage() {
         await api.post('/processes', editing);
       }
       setEditing(null);
-      load();
+      await load();
     } finally {
       setBusy(false);
     }
@@ -61,7 +73,7 @@ export default function ProcessesPage() {
   async function remove(p: ProcessItem) {
     if (!confirm(`Delete process for ${p.companyName}?`)) return;
     await api.delete(`/processes/${p.id}`);
-    load();
+    await load();
   }
 
   function openNew() {
@@ -83,8 +95,8 @@ export default function ProcessesPage() {
         title="Interview processes"
         subtitle={
           user?.role === 'broker'
-            ? 'Showing only processes assigned to you.'
-            : 'Track every pipeline from intro to onboarding.'
+            ? 'Showing only processes where you are the assigned broker.'
+            : 'Pipelines sync from the calendar (company + role + developer). Add a broker on each row for broker visibility.'
         }
         actions={
           canEdit && (
@@ -208,7 +220,8 @@ export default function ProcessesPage() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
-                    No processes to show.
+                    No processes yet. Calendar events with a company and role title appear here
+                    automatically (open this page as manager/bidder to sync existing events).
                   </td>
                 </tr>
               )}

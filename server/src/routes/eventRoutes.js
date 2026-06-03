@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { events } from '../db.js';
+import { events, processes } from '../db.js';
 import { requireRole } from '../auth.js';
 
 const router = Router();
@@ -20,6 +20,7 @@ router.post('/', canManage, async (req, res, next) => {
     const body = req.body || {};
     if (!body.start) return res.status(400).json({ error: 'start is required' });
     const ev = await events.create(body, req.user.id);
+    await processes.syncFromEvent(ev);
     res.status(201).json(ev);
   } catch (e) {
     next(e);
@@ -47,6 +48,7 @@ router.put('/:id', async (req, res, next) => {
       return res.status(403).json({ error: 'Forbidden' });
     }
     const updated = await events.update(req.params.id, req.body || {});
+    await processes.syncFromEvent(updated);
     res.json(updated);
   } catch (e) {
     next(e);
