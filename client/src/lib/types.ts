@@ -35,6 +35,7 @@ export type EventItem = {
   recruiterName: string;
   start: string;
   end: string;
+  timezone: string;
   meetingLink: string;
   jdLink: string;
   roleTitle: string;

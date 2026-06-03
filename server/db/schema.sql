@@ -36,6 +36,7 @@ create table if not exists public.events (
   recruiter_name   text default '',
   start_at         timestamptz not null,
   end_at           timestamptz not null,
+  timezone         text default '',
   meeting_link     text default '',
   jd_link          text default '',
   role_title       text default '',
@@ -48,6 +49,8 @@ create table if not exists public.events (
   created_by       uuid references public.users(id) on delete set null,
   created_at       timestamptz not null default now()
 );
+-- Backfill for databases created before the timezone column existed.
+alter table public.events add column if not exists timezone text default '';
 create index if not exists events_start_idx        on public.events (start_at);
 create index if not exists events_interviewer_idx  on public.events (lower(interviewer_name));
 

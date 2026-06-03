@@ -26,10 +26,84 @@ import { CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Plus, Trash2 } f
 
 const PRESET_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#64748b'];
 
-function toLocalInput(iso: string) {
+const BROWSER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+const CURATED_TIMEZONES = [
+  'UTC',
+  'America/Los_Angeles',
+  'America/Denver',
+  'America/Chicago',
+  'America/New_York',
+  'America/Sao_Paulo',
+  'Europe/London',
+  'Europe/Berlin',
+  'Europe/Bucharest',
+  'Europe/Istanbul',
+  'Africa/Cairo',
+  'Asia/Tehran',
+  'Asia/Dubai',
+  'Asia/Karachi',
+  'Asia/Kolkata',
+  'Asia/Singapore',
+  'Asia/Shanghai',
+  'Asia/Tokyo',
+  'Australia/Sydney',
+];
+
+// Always include the viewer's own timezone, then the curated set (deduped).
+const TIMEZONES: string[] = Array.from(new Set([BROWSER_TZ, ...CURATED_TIMEZONES]));
+
+// Offset (in ms) of `timeZone` relative to UTC at the given instant. Positive = east of UTC.
+function tzOffsetMs(date: Date, timeZone: string): number {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  const map: Record<string, number> = {};
+  for (const p of dtf.formatToParts(date)) {
+    if (p.type !== 'literal') map[p.type] = Number(p.value);
+  }
+  const hour = map.hour === 24 ? 0 : map.hour;
+  const asUTC = Date.UTC(map.year, map.month - 1, map.day, hour, map.minute, map.second);
+  return asUTC - date.getTime();
+}
+
+// "GMT+2" style hint for a timezone at the current moment.
+function gmtLabel(timeZone: string): string {
+  const minutes = Math.round(tzOffsetMs(new Date(), timeZone) / 60000);
+  const sign = minutes >= 0 ? '+' : '-';
+  const abs = Math.abs(minutes);
+  const h = Math.floor(abs / 60);
+  const m = abs % 60;
+  return `GMT${sign}${h}${m ? ':' + String(m).padStart(2, '0') : ''}`;
+}
+
+const TZ_OPTIONS = TIMEZONES.map((tz) => ({ tz, label: `${tz} (${gmtLabel(tz)})` }));
+
+// UTC ISO -> "YYYY-MM-DDTHH:mm" wall-clock string in `timeZone` (for datetime-local inputs).
+function isoToZonedInput(iso: string, timeZone: string): string {
   const d = new Date(iso);
+  const wall = new Date(d.getTime() + tzOffsetMs(d, timeZone));
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${wall.getUTCFullYear()}-${pad(wall.getUTCMonth() + 1)}-${pad(wall.getUTCDate())}T${pad(wall.getUTCHours())}:${pad(wall.getUTCMinutes())}`;
+}
+
+// "YYYY-MM-DDTHH:mm" wall-clock string in `timeZone` -> UTC ISO string.
+function zonedInputToISO(input: string, timeZone: string): string {
+  const [datePart, timePart] = input.split('T');
+  const [y, mo, d] = datePart.split('-').map(Number);
+  const [h, mi] = (timePart || '00:00').split(':').map(Number);
+  const asUTC = Date.UTC(y, mo - 1, d, h, mi, 0);
+  // Resolve the offset at the candidate instant, then refine once for DST boundaries.
+  let offset = tzOffsetMs(new Date(asUTC), timeZone);
+  offset = tzOffsetMs(new Date(asUTC - offset), timeZone);
+  return new Date(asUTC - offset).toISOString();
 }
 
 export default function CalendarPage() {
@@ -92,6 +166,7 @@ export default function CalendarPage() {
       recruiterName: user?.role === 'bidder' ? user.name : '',
       start: start.toISOString(),
       end: end.toISOString(),
+      timezone: BROWSER_TZ,
       meetingLink: '',
       jdLink: '',
       roleTitle: '',
@@ -359,15 +434,35 @@ export default function CalendarPage() {
                 </select>
               </div>
             </div>
+            <div>
+              <label className="label">Timezone</label>
+              <select
+                className="input"
+                value={editing.timezone || BROWSER_TZ}
+                onChange={(e) => setEditing({ ...editing, timezone: e.target.value })}
+              >
+                {TZ_OPTIONS.map((o) => (
+                  <option key={o.tz} value={o.tz}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Start and end times below are entered in this timezone.
+              </p>
+            </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">Start</label>
                 <input
                   type="datetime-local"
                   className="input"
-                  value={editing.start ? toLocalInput(editing.start) : ''}
+                  value={editing.start ? isoToZonedInput(editing.start, editing.timezone || BROWSER_TZ) : ''}
                   onChange={(e) =>
-                    setEditing({ ...editing, start: new Date(e.target.value).toISOString() })
+                    setEditing({
+                      ...editing,
+                      start: zonedInputToISO(e.target.value, editing.timezone || BROWSER_TZ),
+                    })
                   }
                 />
               </div>
@@ -376,9 +471,12 @@ export default function CalendarPage() {
                 <input
                   type="datetime-local"
                   className="input"
-                  value={editing.end ? toLocalInput(editing.end) : ''}
+                  value={editing.end ? isoToZonedInput(editing.end, editing.timezone || BROWSER_TZ) : ''}
                   onChange={(e) =>
-                    setEditing({ ...editing, end: new Date(e.target.value).toISOString() })
+                    setEditing({
+                      ...editing,
+                      end: zonedInputToISO(e.target.value, editing.timezone || BROWSER_TZ),
+                    })
                   }
                 />
               </div>
@@ -467,6 +565,12 @@ export default function CalendarPage() {
               <Info label="Interviewer">{viewing.interviewerName || '—'}</Info>
               <Info label="Recruiter">{viewing.recruiterName || '—'}</Info>
               <Info label="Status">{viewing.status}</Info>
+              {viewing.timezone && (
+                <Info label="Set in timezone">
+                  {isoToZonedInput(viewing.start, viewing.timezone).slice(11)} · {viewing.timezone}{' '}
+                  ({gmtLabel(viewing.timezone)})
+                </Info>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <Info label="Meeting link">
