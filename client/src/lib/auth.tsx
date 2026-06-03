@@ -115,6 +115,11 @@ export const Permissions = {
     viewContacts: (r: Role) => r === 'manager',
     edit: (r: Role) => r === 'manager',
   },
+  availability: {
+    view: (r: Role) => r !== 'broker',
+    // Managers can edit anyone; interviewers only their own (enforced per-slot).
+    edit: (r: Role) => r === 'manager' || r === 'interviewer',
+  },
   users: {
     view: (r: Role) => r === 'manager',
     edit: (r: Role) => r === 'manager',

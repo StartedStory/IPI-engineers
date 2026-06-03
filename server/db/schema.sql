@@ -83,12 +83,26 @@ create table if not exists public.teammates (
   whatsapp  text
 );
 
+-- ─── availability (interviewer free/busy slots) ─────────────────────────────
+create table if not exists public.availability (
+  id               uuid primary key default gen_random_uuid(),
+  interviewer_name text not null,
+  start_at         timestamptz not null,
+  end_at           timestamptz not null,
+  timezone         text default '',
+  created_by       uuid references public.users(id) on delete set null,
+  created_at       timestamptz not null default now()
+);
+create index if not exists availability_interviewer_idx on public.availability (lower(interviewer_name));
+create index if not exists availability_start_idx       on public.availability (start_at);
+
 -- ─── Row Level Security ─────────────────────────────────────────────────────
 -- We use the SERVICE ROLE key from the server, which bypasses RLS.
 -- RLS stays disabled (default) so a misconfigured anon key cannot read data.
-alter table public.users      enable row level security;
-alter table public.developers enable row level security;
-alter table public.events     enable row level security;
-alter table public.processes  enable row level security;
-alter table public.teammates  enable row level security;
+alter table public.users        enable row level security;
+alter table public.developers   enable row level security;
+alter table public.events       enable row level security;
+alter table public.processes    enable row level security;
+alter table public.teammates    enable row level security;
+alter table public.availability enable row level security;
 -- No policies are created intentionally; only service_role can read/write.

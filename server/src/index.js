@@ -11,6 +11,7 @@ import developerRoutes from './routes/developerRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import processRoutes from './routes/processRoutes.js';
 import teammateRoutes from './routes/teammateRoutes.js';
+import availabilityRoutes from './routes/availabilityRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
@@ -52,6 +53,7 @@ app.use('/api/developers', developerRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/processes', processRoutes);
 app.use('/api/teammates', teammateRoutes);
+app.use('/api/availability', availabilityRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
 

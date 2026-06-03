@@ -464,6 +464,78 @@ export const teammates = {
   },
 };
 
+// ─── availability ───────────────────────────────────────────────────────────
+function availabilityRow(a) {
+  if (!a) return a;
+  return {
+    id: a.id,
+    interviewerName: a.interviewer_name || '',
+    start: a.start_at,
+    end: a.end_at,
+    timezone: a.timezone || '',
+    createdBy: a.created_by,
+  };
+}
+
+function availabilityInsert(a, userId) {
+  return {
+    interviewer_name: a.interviewerName || '',
+    start_at: a.start,
+    end_at: a.end || a.start,
+    timezone: a.timezone || '',
+    created_by: userId || null,
+  };
+}
+
+const AVAILABILITY_PATCH_MAP = {
+  interviewerName: 'interviewer_name',
+  start: 'start_at',
+  end: 'end_at',
+  timezone: 'timezone',
+};
+
+export const availability = {
+  async listVisibleTo(user) {
+    let q = supabase.from('availability').select('*').order('start_at', { ascending: true });
+    if (user.role === 'interviewer') {
+      q = q.ilike('interviewer_name', user.name);
+    }
+    const data = unwrap(await q);
+    return data.map(availabilityRow);
+  },
+  async get(id) {
+    const { data, error } = await supabase
+      .from('availability')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return availabilityRow(data);
+  },
+  async create(body, userId) {
+    const data = unwrap(
+      await supabase
+        .from('availability')
+        .insert(availabilityInsert(body, userId))
+        .select('*')
+        .single()
+    );
+    return availabilityRow(data);
+  },
+  async update(id, patch) {
+    const upd = pickMapped(patch, AVAILABILITY_PATCH_MAP);
+    if (!Object.keys(upd).length) return await this.get(id);
+    const data = unwrap(
+      await supabase.from('availability').update(upd).eq('id', id).select('*').single()
+    );
+    return availabilityRow(data);
+  },
+  async remove(id) {
+    const { error } = await supabase.from('availability').delete().eq('id', id);
+    if (error) throw error;
+  },
+};
+
 // ─── CV storage (Supabase Storage bucket) ───────────────────────────────────
 export const cvStorage = {
   async upload(buffer, filename, mimetype) {

@@ -7,6 +7,7 @@ import CalendarPage from './pages/CalendarPage';
 import ProcessesPage from './pages/ProcessesPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import TeammatesPage from './pages/TeammatesPage';
+import AvailabilityPage from './pages/AvailabilityPage';
 import DashboardPage from './pages/DashboardPage';
 import UsersPage from './pages/UsersPage';
 
@@ -92,6 +93,14 @@ export default function App() {
           element={
             <Protected allow={Permissions.analytics.view}>
               <AnalyticsPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="availability"
+          element={
+            <Protected allow={Permissions.availability.view}>
+              <AvailabilityPage />
             </Protected>
           }
         />

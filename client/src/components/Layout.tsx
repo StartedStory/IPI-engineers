@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth, Permissions, roleColor } from '../lib/auth';
 import {
+  CalendarClock,
   CalendarDays,
   LayoutDashboard,
   LineChart,
@@ -15,6 +16,7 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, allow: Permissions.dashboard.view },
   { to: '/developers', label: 'Developers', icon: UserSquare2, allow: Permissions.developers.view },
   { to: '/calendar', label: 'Calendar', icon: CalendarDays, allow: Permissions.calendar.view },
+  { to: '/availability', label: 'Availability', icon: CalendarClock, allow: Permissions.availability.view },
   { to: '/processes', label: 'Interview Processes', icon: ListChecks, allow: Permissions.processes.view },
   { to: '/analytics', label: 'Analytics', icon: LineChart, allow: Permissions.analytics.view },
   { to: '/teammates', label: 'Teammates', icon: Users, allow: Permissions.teammates.view },

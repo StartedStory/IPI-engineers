@@ -60,6 +60,15 @@ export type ProcessItem = {
   updatedAt: string;
 };
 
+export type Availability = {
+  id: string;
+  interviewerName: string;
+  start: string;
+  end: string;
+  timezone: string;
+  createdBy: string;
+};
+
 export type Teammate = {
   id: string;
   role: 'bidder' | 'interviewer' | 'broker';
