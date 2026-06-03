@@ -1,23 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { Avatar } from '../components/Avatar';
 import { api } from '../lib/api';
 import { useAuth, Permissions } from '../lib/auth';
-import { STAGE_BG, type EventItem, type ProcessItem, type Developer } from '../lib/types';
-import { CalendarDays, ListChecks, UserSquare2 } from 'lucide-react';
-import { format } from 'date-fns';
+import {
+  STAGE_BG,
+  type Availability,
+  type EventItem,
+  type ProcessItem,
+  type Developer,
+} from '../lib/types';
+import { CalendarClock, CalendarDays, ListChecks, UserSquare2 } from 'lucide-react';
+import { addDays, format, isSameDay } from 'date-fns';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [events, setEvents] = useState<EventItem[]>([]);
   const [processes, setProcesses] = useState<ProcessItem[]>([]);
   const [developers, setDevelopers] = useState<Developer[]>([]);
+  const [availability, setAvailability] = useState<Availability[]>([]);
 
   useEffect(() => {
     api.get<EventItem[]>('/events').then((r) => setEvents(r.data)).catch(() => {});
     api.get<ProcessItem[]>('/processes').then((r) => setProcesses(r.data)).catch(() => {});
     if (user && Permissions.developers.view(user.role)) {
       api.get<Developer[]>('/developers').then((r) => setDevelopers(r.data)).catch(() => {});
+    }
+    if (user && Permissions.availability.view(user.role)) {
+      api
+        .get<Availability[]>('/availability')
+        .then((r) => setAvailability(r.data))
+        .catch(() => {});
     }
   }, [user]);
 
@@ -26,6 +40,35 @@ export default function DashboardPage() {
     .filter((e) => new Date(e.start) >= now)
     .sort((a, b) => +new Date(a.start) - +new Date(b.start))
     .slice(0, 5);
+
+  const today = new Date();
+  const tomorrow = addDays(today, 1);
+
+  // Group each interviewer's free slots for today / tomorrow, ordered by start.
+  const availableInterviewers = useMemo(() => {
+    const byName = new Map<string, { today: Availability[]; tomorrow: Availability[] }>();
+    for (const slot of availability) {
+      const start = new Date(slot.start);
+      const bucket = isSameDay(start, today) ? 'today' : isSameDay(start, tomorrow) ? 'tomorrow' : null;
+      if (!bucket) continue;
+      const name = slot.interviewerName.trim();
+      if (!name) continue;
+      if (!byName.has(name)) byName.set(name, { today: [], tomorrow: [] });
+      byName.get(name)![bucket].push(slot);
+    }
+    const sortByStart = (a: Availability, b: Availability) => +new Date(a.start) - +new Date(b.start);
+    return [...byName.entries()]
+      .map(([name, slots]) => ({
+        name,
+        today: slots.today.sort(sortByStart),
+        tomorrow: slots.tomorrow.sort(sortByStart),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availability]);
+
+  const fmtRange = (s: Availability) =>
+    `${format(new Date(s.start), 'HH:mm')}–${format(new Date(s.end), 'HH:mm')}`;
 
   return (
     <div>
@@ -127,6 +170,70 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {user && Permissions.availability.view(user.role) && (
+        <div className="card p-5 mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold flex items-center gap-2">
+              <CalendarClock className="h-4 w-4 text-slate-400" />
+              Available interviewers · today &amp; tomorrow
+            </h3>
+            <Link to="/availability" className="text-xs text-brand-600 hover:underline">
+              View availability
+            </Link>
+          </div>
+          {availableInterviewers.length === 0 ? (
+            <div className="text-sm text-slate-500 py-8 text-center">
+              No interviewer availability set for today or tomorrow.
+            </div>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {availableInterviewers.map((iv) => (
+                <li key={iv.name} className="py-3 flex items-start gap-3">
+                  <Avatar name={iv.name} size={32} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-slate-900">{iv.name}</div>
+                    <div className="mt-1 grid sm:grid-cols-2 gap-x-6 gap-y-1">
+                      <DayLine label="Today" slots={iv.today} fmt={fmtRange} />
+                      <DayLine label="Tomorrow" slots={iv.tomorrow} fmt={fmtRange} />
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DayLine({
+  label,
+  slots,
+  fmt,
+}: {
+  label: string;
+  slots: Availability[];
+  fmt: (s: Availability) => string;
+}) {
+  return (
+    <div className="flex items-baseline gap-2 text-xs">
+      <span className="font-semibold text-slate-500 w-16 shrink-0">{label}</span>
+      {slots.length === 0 ? (
+        <span className="text-slate-400">Not available</span>
+      ) : (
+        <span className="flex flex-wrap gap-1.5">
+          {slots.map((s) => (
+            <span
+              key={s.id}
+              className="inline-flex rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 font-medium"
+            >
+              {fmt(s)}
+            </span>
+          ))}
+        </span>
+      )}
     </div>
   );
 }
