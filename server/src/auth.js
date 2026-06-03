@@ -28,7 +28,13 @@ export async function requireAuth(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     const user = await findUserById(payload.sub);
     if (!user) return res.status(401).json({ error: 'Invalid token' });
-    req.user = { id: user.id, role: user.role, name: user.name, email: user.email };
+    req.user = {
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatar_url || '',
+    };
     next();
   } catch (e) {
     return res.status(401).json({ error: 'Invalid token' });

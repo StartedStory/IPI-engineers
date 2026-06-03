@@ -174,6 +174,7 @@ function userRow(u) {
     name: u.name,
     email: u.email,
     role: u.role,
+    avatarUrl: u.avatar_url || '',
     createdAt: u.created_at,
   };
 }
@@ -201,7 +202,7 @@ export const users = {
     const data = unwrap(
       await supabase
         .from('users')
-        .select('id, name, email, role, created_at')
+        .select('id, name, email, role, avatar_url, created_at')
         .order('role')
         .order('email')
     );
@@ -212,23 +213,24 @@ export const users = {
       await supabase
         .from('users')
         .insert({ name, email, role, password_hash: passwordHash })
-        .select('id, name, email, role, created_at')
+        .select('id, name, email, role, avatar_url, created_at')
         .single()
     );
     return userRow(data);
   },
-  async update(id, { name, email, role, passwordHash }) {
+  async update(id, { name, email, role, passwordHash, avatarUrl }) {
     const upd = {};
     if (name !== undefined) upd.name = name;
     if (email !== undefined) upd.email = email;
     if (role !== undefined) upd.role = role;
     if (passwordHash !== undefined) upd.password_hash = passwordHash;
+    if (avatarUrl !== undefined) upd.avatar_url = avatarUrl;
     const data = unwrap(
       await supabase
         .from('users')
         .update(upd)
         .eq('id', id)
-        .select('id, name, email, role, created_at')
+        .select('id, name, email, role, avatar_url, created_at')
         .single()
     );
     return userRow(data);

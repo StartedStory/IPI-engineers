@@ -84,5 +84,6 @@ export type AppUser = {
   name: string;
   email: string;
   role: 'manager' | 'bidder' | 'interviewer' | 'broker';
+  avatarUrl?: string;
   createdAt: string;
 };

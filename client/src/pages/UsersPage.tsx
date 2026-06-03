@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { Modal } from '../components/Modal';
+import { Avatar } from '../components/Avatar';
 import { api } from '../lib/api';
 import { roleColor, useAuth, type Role } from '../lib/auth';
 import type { AppUser } from '../lib/types';
@@ -154,9 +155,7 @@ export default function UsersPage() {
                   <tr key={u.id} className="hover:bg-slate-50/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-slate-100 grid place-items-center text-slate-600 text-xs font-semibold">
-                          {u.name.charAt(0)}
-                        </div>
+                        <Avatar name={u.name} src={u.avatarUrl} size={28} />
                         <div>
                           <div className="font-semibold text-slate-900">{u.name}</div>
                           {isSelf && (

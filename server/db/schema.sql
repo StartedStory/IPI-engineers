@@ -11,8 +11,11 @@ create table if not exists public.users (
   email         text not null unique,
   password_hash text not null,
   role          text not null check (role in ('manager','bidder','interviewer','broker')),
+  avatar_url    text default '',
   created_at    timestamptz not null default now()
 );
+-- Backfill for databases created before the avatar column existed.
+alter table public.users add column if not exists avatar_url text default '';
 
 -- ─── developers (candidate pool) ────────────────────────────────────────────
 create table if not exists public.developers (

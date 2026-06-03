@@ -16,6 +16,7 @@ export type User = {
   name: string;
   email: string;
   role: Role;
+  avatarUrl?: string;
 };
 
 type AuthContextValue = {
@@ -24,6 +25,7 @@ type AuthContextValue = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  updateUser: (patch: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -77,9 +79,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearSession();
   }, [clearSession]);
 
+  const updateUser = useCallback((patch: Partial<User>) => {
+    setUser((cur) => {
+      if (!cur) return cur;
+      const next = { ...cur, ...patch };
+      localStorage.setItem('ipi_user', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const value = useMemo(
-    () => ({ user, bootstrapping, loading, login, logout }),
-    [user, bootstrapping, loading, login, logout]
+    () => ({ user, bootstrapping, loading, login, logout, updateUser }),
+    [user, bootstrapping, loading, login, logout, updateUser]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
